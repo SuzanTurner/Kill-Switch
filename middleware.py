@@ -1,11 +1,11 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from main import get_status
+from control.main import fetch_status
 
 class LockdownMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        status = get_status()
+        status = fetch_status()
         if status.get("lock", True):
             return JSONResponse(
                 status_code=403,

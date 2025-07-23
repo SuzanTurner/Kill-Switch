@@ -1,53 +1,33 @@
 from flask import Flask, request, jsonify
-
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from config import status
-import json
-import os
-
-app = Flask(__name__)
-# STATUS_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "status.json"))
-
-
-# def get_status():
-#     with open(STATUS_FILE, "r") as f:
-#         status = json.load(f)
-#     return status
-
+import sys, os, json, importlib, requests
 from pathlib import Path
 
-CONFIG_FILE = Path(__file__).resolve().parent / "config.py"
-
-import importlib
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import config
 
-def get_status():
-    importlib.reload(config)  # 🔁 Force refresh
-    return config.status
+app = Flask(__name__)
+CONFIG_FILE = Path(__file__).resolve().parent / "config.py"
 
-
-# @app.route("/update", methods=["POST"])
-# def update_status():
-#     data = request.json
-#     with open(STATUS_FILE, "w") as f:
-#         json.dump(data, f, indent=2)
-#     return jsonify({"msg": "Status updated ✅", "new_status": data})
-
+@app.route("/status", methods=["GET"])
+def serve_status():
+    importlib.reload(config)
+    return jsonify(config.status)
 
 @app.route("/update", methods=["POST"])
 def update_status():
     data = request.json
-
-    # py_content = f"status = {json.dumps(data, indent=2)}\n"
     py_content = f"status = {repr(data)}\n"
-
     with open(CONFIG_FILE, "w") as f:
         f.write(py_content)
-
     return jsonify({"msg": "Status updated ✅", "new_status": data})
+
+def fetch_status():
+    try:
+        res = requests.get("https://kill-switch-lt62.onrender.com/status", timeout=3)
+        return res.json()
+    except Exception as e:
+        print("🔥 Kill switch check failed:", e)
+        return {"lock": True, "message": "Default lockdown mode"}
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
