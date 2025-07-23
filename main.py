@@ -21,9 +21,12 @@ from pathlib import Path
 
 CONFIG_FILE = Path(__file__).resolve().parent / "config.py"
 
+import importlib
+import config
+
 def get_status():
-    status_ = status
-    return status_
+    importlib.reload(config)  # 🔁 Force refresh
+    return config.status
 
 
 # @app.route("/update", methods=["POST"])

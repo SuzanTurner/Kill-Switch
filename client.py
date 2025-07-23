@@ -1,6 +1,7 @@
 import requests
 
-url = "http://localhost:5000/update"
+# url = "http://localhost:5000/update"
+url = "https://kill-switch-lt62.onrender.com/update"
 
 def update():
     data = {
