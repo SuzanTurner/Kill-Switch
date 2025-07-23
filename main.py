@@ -4,7 +4,7 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from control.config import status
+from config import status
 import json
 import os
 

@@ -1,7 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from control.main import get_status
+from main import get_status
 
 class LockdownMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
